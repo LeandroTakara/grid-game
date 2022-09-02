@@ -6,6 +6,8 @@ const divGame = document.querySelector('.game')
 const divVictory = document.querySelector('.victory-screen')
 
 // game variables
+const MAX_GRID_SIZE = 9
+const MIN_GRID_SIZE = 2
 let game = []
 let gridSize = 3
 let clicks = 0
@@ -80,6 +82,13 @@ function checkVictory() {
 
 function changeGridSize() {
   gridSize = parseInt(inputGridSize.value)
+  if (gridSize < MIN_GRID_SIZE) {
+    inputGridSize.value = MIN_GRID_SIZE
+    gridSize = MIN_GRID_SIZE
+  } else if (gridSize > MAX_GRID_SIZE) {
+    inputGridSize.value = MAX_GRID_SIZE
+    gridSize = MAX_GRID_SIZE
+  }
 
   root.style.setProperty('--size', gridSize)
   createGrid(gridSize)
