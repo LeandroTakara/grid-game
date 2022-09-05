@@ -41,6 +41,9 @@ function createGrid(size) {
 }
 
 function clickTile(row, column) {
+  clicks++
+  if (!time) startCounting()
+
   // center tile
   transformTile(row, column)
   // up tile
@@ -54,9 +57,6 @@ function clickTile(row, column) {
 
   // check victory
   checkVictory()
-
-  clicks++
-  if (!time) startCounting()
 }
 
 function transformTile(row, column) {
