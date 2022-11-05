@@ -12,23 +12,22 @@ let game = []
 let gridSize = 3
 let clicks = 0
 let time = 0
-let intervalCounting
+let intervalCounting = null
 
 // events
 inputGridSize.addEventListener('input', changeGridSize)
-buttonNewGame.addEventListener('click', () => {
-  resetGame()
-  createGrid(gridSize)
-})
+buttonNewGame.addEventListener('click', newGame)
 
 // game functions
-function createGrid(size) {
-  // reset
+function newGame() {
   resetGame()
+  createGrid()
+}
 
-  for (let row = 0; row < size; row++) {
+function createGrid() {
+  for (let row = 0; row < gridSize; row++) {
     const gameRow = []
-    for (let column = 0; column < size; column++) {
+    for (let column = 0; column < gridSize; column++) {
       const tile = document.createElement('div')
       tile.classList.add('tile')
       tile.addEventListener('click', () => clickTile(row, column))
@@ -59,8 +58,13 @@ function clickTile(row, column) {
   checkVictory()
 }
 
+const isInRange = (value, min, max) => value >= min && value <= max
 function transformTile(row, column) {
-  if (row >= 0 && row < gridSize && column >= 0 && column < gridSize) game[row][column].classList.toggle('clicked')
+  if (
+    isInRange(row, 0, gridSize - 1) &&
+    isInRange(column, 0, gridSize - 1)
+  ) 
+    game[row][column].classList.toggle('clicked')
 }
 
 function checkVictory() {
@@ -73,7 +77,7 @@ function checkVictory() {
         <div class="msg">YOU WIN</div>
         <div class="game-results">
           <div>Clicks: ${clicks}</div>
-          <div>Time: ${parseInt(time / 10)}.${time % 10}s</div>
+          <div>Time: ${parseInt(time / 10)}.${time % 100}s</div>
         </div>
       </div>
     `
@@ -91,7 +95,7 @@ function changeGridSize() {
   }
 
   root.style.setProperty('--size', gridSize)
-  createGrid(gridSize)
+  newGame()
 }
 
 function resetGame() {
@@ -109,4 +113,4 @@ function startCounting() {
   }, 100)
 }
 
-createGrid(gridSize)
+newGame()
