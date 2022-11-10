@@ -1,22 +1,30 @@
 // DOM elements
 const root = document.querySelector(':root')
-const inputGridSize = document.getElementById('inputGridSize')
+const inputWidth = document.getElementById('inputWidth')
+const inputHeight = document.getElementById('inputHeight')
 const buttonNewGame = document.getElementById('btnStart')
+const buttonUndo = document.getElementById('btnUndo')
 const divGame = document.querySelector('.game')
 const divVictory = document.querySelector('.victory-screen')
 
 // game variables
 const MAX_GRID_SIZE = 9
 const MIN_GRID_SIZE = 2
+const MAX_UNDO = 100
+let gameFinished = false
 let game = []
-let gridSize = 3
+let gameMoves = []
+let width = 3
+let height = 3
 let clicks = 0
 let time = 0
 let intervalCounting = null
 
 // events
-inputGridSize.addEventListener('input', changeGridSize)
+inputWidth.addEventListener('input', () => changeGridSize('width'))
+inputHeight.addEventListener('input', () => changeGridSize('height'))
 buttonNewGame.addEventListener('click', newGame)
+buttonUndo.addEventListener('click', undoClick)
 
 // game functions
 function newGame() {
@@ -25,9 +33,9 @@ function newGame() {
 }
 
 function createGrid() {
-  for (let row = 0; row < gridSize; row++) {
+  for (let row = 0; row < width; row++) {
     const gameRow = []
-    for (let column = 0; column < gridSize; column++) {
+    for (let column = 0; column < height; column++) {
       const tile = document.createElement('div')
       tile.classList.add('tile')
       tile.addEventListener('click', () => clickTile(row, column))
@@ -40,9 +48,17 @@ function createGrid() {
 }
 
 function clickTile(row, column) {
-  clicks++
-  if (!time) startCounting()
+  changeTile(row, column)
 
+  checkVictory()
+
+  clicks++
+  gameMoves.push({ row, column })
+  if (gameMoves.length > MAX_UNDO) gameMoves.shift()
+  if (!time) startCounting()
+}
+
+function changeTile(row, column) {
   // center tile
   transformTile(row, column)
   // up tile
@@ -53,22 +69,27 @@ function clickTile(row, column) {
   transformTile(row - 1, column)
   // right tile
   transformTile(row + 1, column)
+}
 
-  // check victory
-  checkVictory()
+function undoClick() {
+  if (!gameFinished) {
+    const coord = gameMoves.pop()
+    if (coord) changeTile(coord.row, coord.column)
+  }
 }
 
 const isInRange = (value, min, max) => value >= min && value <= max
 function transformTile(row, column) {
   if (
-    isInRange(row, 0, gridSize - 1) &&
-    isInRange(column, 0, gridSize - 1)
+    isInRange(row, 0, width - 1) &&
+    isInRange(column, 0, height - 1)
   ) 
     game[row][column].classList.toggle('clicked')
 }
 
 function checkVictory() {
-  if (document.querySelectorAll('.tile.clicked').length === gridSize ** 2) {
+  if (game.flat().every(tile => tile.classList.contains('clicked'))) {
+    gameFinished = true
     clearInterval(intervalCounting)
 
     divVictory.classList.remove('hidden')
@@ -84,17 +105,29 @@ function checkVictory() {
   }
 }
 
-function changeGridSize() {
-  gridSize = parseInt(inputGridSize.value)
-  if (gridSize < MIN_GRID_SIZE) {
-    inputGridSize.value = MIN_GRID_SIZE
-    gridSize = MIN_GRID_SIZE
-  } else if (gridSize > MAX_GRID_SIZE) {
-    inputGridSize.value = MAX_GRID_SIZE
-    gridSize = MAX_GRID_SIZE
+function getInputValue(input) {
+  let value = parseInt(input.value)
+
+  if (value < MIN_GRID_SIZE) {
+    input.value = MIN_GRID_SIZE
+    value = MIN_GRID_SIZE
+  } else if (value > MAX_GRID_SIZE) {
+    input.value = MAX_GRID_SIZE
+    value = MAX_GRID_SIZE
   }
 
-  root.style.setProperty('--size', gridSize)
+  return value
+}
+
+function changeGridSize(type) {
+  if (type === 'width') {
+    width = getInputValue(inputWidth)
+    root.style.setProperty('--width', width)
+  } else if (type === 'height') {
+    height = getInputValue(inputHeight)
+    root.style.setProperty('--height', height)
+  }
+
   newGame()
 }
 
@@ -102,7 +135,9 @@ function resetGame() {
   divGame.innerHTML = ''
   divVictory.innerHTML = ''
   divVictory.classList.add('hidden')
+  gameFinished = false
   game = []
+  gameMoves = []
   clicks = 0
   time = 0
 }

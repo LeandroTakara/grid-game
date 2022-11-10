@@ -11,14 +11,25 @@
 </head>
 
 <body>
-  <h1>GRID GAME</h1>
+  <h1 class="gameName">GRID GAME</h1>
+
   <div class="settings">
-    <label>
-      Grid size:
-      <input type="number" id="inputGridSize" min="2" max="9" value="3">
-    </label>
-    <button id="btnStart">New Game</button>
+    <div>
+      <label>
+        Width
+        <input type="number" id="inputWidth" class="inputGridSize" min="2" max="9" value="3">
+      </label>
+      <label>
+        Height
+        <input type="number" id="inputHeight" class="inputGridSize" min="2" max="9" value="3">
+      </label>
+    </div>
+    <div class="settings-row">
+      <button id="btnStart" class="buttonGame">New Game</button>
+      <button id="btnUndo" class="buttonGame">Undo</button>
+    </div>
   </div>
+
   <div class="game-container">
     <div class="game"></div>
     <div class="victory-screen hidden"></div>
