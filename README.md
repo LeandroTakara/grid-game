@@ -1,6 +1,6 @@
 # Grid Game
 A simple game made with HTML, CSS and Javascript.
-[Play here](https://devswordfish.github.io/grid-game/)
+[Play here](https://leandrotakara.github.io/grid-game/)
 ---
 # How to play
 The object of the game is to fill the grid with black. On the grid, there are tiles which you have to click to change its color. When you click in a tile, the adjacent tiles (up, down, right and left) also change their colors. If a tile is white, it turns black, and if it is black, then, it turns white.  
